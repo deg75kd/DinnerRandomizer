@@ -22,3 +22,15 @@ remove veg recipes with carb of 2nd
 select 3rd recipe from veg-only
 select 4th recipe from easy
 prompt for approval
+
+
+pull recipes
+duplicate based on ratings
+split into moderate/hard, easy, fish & veg
+-- remove fish/veg protein from moderate/hard & easy
+select 1st recipe from veg
+select 2nd recipe from fish-only
+remove easy & moderate recipes with carb of veg & fish
+select 3rd recipe from moderate/hard
+select 4th recipe from easy
+prompt for approval

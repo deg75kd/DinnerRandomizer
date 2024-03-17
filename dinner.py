@@ -5,43 +5,60 @@ import numpy as np
 
 # desired recipe count
 recipe_count = 4
-# empty dataframe for recipes
-df_this_week = pd.DataFrame()
-
 # pull recipes
 xlsx_path = 'meals.xlsx'
 df_meals = pd.read_excel(xlsx_path)
 
+# create empty dataframe for rated recipes
+list_col = df_meals.columns.tolist()
+df_multi = pd.DataFrame(columns=list_col)
+
+# add recipes with duplicates
+for index, row in df_meals.iterrows():
+    for i in range(row['Rating']):
+        df_multi = df_multi.append(
+            {
+                'MealID': row['MealID'], 
+                'MealName': row['MealName'], 
+                'Carb': row['Carb'],
+                'Protein': row['Protein'],
+                'Veg': row['Veg'],
+                'Ease': row['Ease'],
+                'Rating': row['Rating']
+            },
+            ignore_index=True
+        )
+
 # start loop
 while True:
+    # empty dataframe for recipes
+    df_this_week = pd.DataFrame()
+
     # split into sub-lists
-    df_moderate = df_meals[(df_meals['Ease'] == "moderate") | (df_meals['Ease'] == "complex") | (df_meals['Ease'] == "slow cooker")].reset_index(drop=True)
+    df_moderate = df_multi[(df_multi['Ease'] == "moderate") | (df_multi['Ease'] == "complex") | (df_multi['Ease'] == "slow cooker")].reset_index(drop=True)
     print(df_moderate)
     print("\n")
-    df_fish = df_meals[df_meals['Protein'] == "fish"].reset_index(drop=True)
+    df_fish = df_multi[df_multi['Protein'] == "fish"].reset_index(drop=True)
     print(df_fish)
     print("\n")
-    df_veg = df_meals[df_meals['Protein'] == "veg"].reset_index(drop=True)
+    df_veg = df_multi[df_multi['Protein'] == "veg"].reset_index(drop=True)
     print(df_veg)
     print("\n")
-    df_easy = df_meals[(df_meals['Ease'] == "quick") & (df_meals['Protein'] != "fish") & (df_meals['Protein'] != "veg")].reset_index(drop=True)
+    df_easy = df_multi[(df_multi['Ease'] == "quick") & (df_multi['Protein'] != "fish") & (df_multi['Protein'] != "veg")].reset_index(drop=True)
     print(df_easy)
     print("\n")
 
     # remove fish/veg protein
     
-    # randomly select 1 moderate/hard recipe
+    # select 1 veg recipe
     rng = np.random.default_rng()
-    moderate_ct = df_moderate.shape[0]
-    rints = rng.integers(low=0, high=moderate_ct, size=1)
+    veg_ct = df_veg.shape[0]
+    rints = rng.integers(low=0, high=veg_ct, size=1)
+
+    print("\nSelected veg recipe {} out of {}".format(rints[0],veg_ct))
+    print(df_veg.loc[rints[0]])
     
-    print("Selected moderate recipe {} out of {}".format(rints[0], moderate_ct))
-    print(df_moderate.loc[rints[0]])
-    
-    df_this_week = df_meals[df_meals['MealID'] == df_moderate.loc[rints[0]].MealID]
-    
-    # remove the carb of the selected moderate/hard recipe from fish
-    df_fish = df_fish[df_fish['Carb'].values != df_this_week['Carb'].values].reset_index(drop=True)
+    df_this_week = df_this_week.append(df_meals[df_meals['MealID'] == df_veg.loc[rints[0]].MealID])
     
     # select 1 fish recipe
     fish_ct = df_fish.shape[0]
@@ -52,17 +69,20 @@ while True:
     
     df_this_week = df_this_week.append(df_meals[df_meals['MealID'] == df_fish.loc[rints[0]].MealID])
     
-    # remove carb from veg recipes
-    df_veg = df_veg[~df_veg['Carb'].isin(df_this_week['Carb'].values)].reset_index(drop=True)
+    # remove the carb of the fish/veg recipe from moderate/hard
+    # df_moderate = df_moderate[df_moderate['Carb'].values != df_this_week['Carb'].values].reset_index(drop=True)
+    df_moderate = df_moderate[~df_moderate['Carb'].isin(df_this_week['Carb'].values)].reset_index(drop=True)
+    # remove the carb of the fish/veg recipe from 
+    df_easy = df_easy[~df_easy['Carb'].isin(df_this_week['Carb'].values)].reset_index(drop=True)
     
-    # select 1 veg recipe
-    veg_ct = df_veg.shape[0]
-    rints = rng.integers(low=0, high=veg_ct, size=1)
-
-    print("\nSelected veg recipe {} out of {}".format(rints[0],veg_ct))
-    print(df_veg.loc[rints[0]])
+    # select 1 moderate/hard recipe
+    moderate_ct = df_moderate.shape[0]
+    rints = rng.integers(low=0, high=moderate_ct, size=1)
     
-    df_this_week = df_this_week.append(df_meals[df_meals['MealID'] == df_veg.loc[rints[0]].MealID])
+    print("\nSelected moderate recipe {} out of {}".format(rints[0], moderate_ct))
+    print(df_moderate.loc[rints[0]])
+    
+    df_this_week = df_this_week.append(df_meals[df_meals['MealID'] == df_moderate.loc[rints[0]].MealID])
     
     # randomly select 1 easy recipe
     easy_ct = df_easy.shape[0]
@@ -83,7 +103,7 @@ while True:
         print("\n************************************************************")
 
         # prompt user to accept recipes
-        answer = input("Are you happy with these selections? Y or N")
+        answer = input("\nAre you happy with these selections? Y or N")
         cap_answer = answer.upper()
         if (cap_answer == 'Y'):
             break
