@@ -1,0 +1,36 @@
+pull recipes
+split into moderate/hard, easy, fish & veg
+select 1st recipe from moderate/hard
+prompt for approval
+remove fish recipes with that carb
+select 2nd recipe from fish-only
+prompt for approval
+remove veg recipes with carbs of 1st/2nd
+select 3rd recipe from veg-only
+prompt for approval
+select 4th recipe from easy
+
+
+
+pull recipes
+split into moderate/hard, easy, fish & veg
+select 1st recipe from moderate/hard
+remove fish recipes with that carb
+remove veg recipes with that carb
+select 2nd recipe from fish-only
+remove veg recipes with carb of 2nd
+select 3rd recipe from veg-only
+select 4th recipe from easy
+prompt for approval
+
+
+pull recipes
+duplicate based on ratings
+split into moderate/hard, easy, fish & veg
+-- remove fish/veg protein from moderate/hard & easy
+select 1st recipe from veg
+select 2nd recipe from fish-only
+remove easy & moderate recipes with carb of veg & fish
+select 3rd recipe from moderate/hard
+select 4th recipe from easy
+prompt for approval
