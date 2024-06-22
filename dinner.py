@@ -6,8 +6,11 @@ import numpy as np
 # desired recipe count
 recipe_count = 4
 # pull recipes
+#xlsx_path = 'C:\Users\Kevin\DS\Dinner Randomizer\meals.xlsx'
+#xlsx_path = 'C:\Users\Kevin\DS\Dinner Randomizer\meals.xlsx'
 xlsx_path = 'meals.xlsx'
 df_meals = pd.read_excel(xlsx_path)
+# df_meals = pd.read_excel("C:/Users/Kevin/DS/Dinner Randomizer/meals.xlsx")
 
 # create empty dataframe for rated recipes
 list_col = df_meals.columns.tolist()
