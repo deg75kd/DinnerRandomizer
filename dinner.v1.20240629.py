@@ -1,61 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-########################### imports ###########################
-
 import pandas as pd
 import numpy as np
-import datetime as dt
-
-########################### constants ###########################
 
 # desired recipe count
 recipe_count = 4
-# Excel path
-xlsx_path = 'meals.xlsx'
-# Excel recipe sheet
-meals_sheet = "meals"
-# Excel history sheet
-history_sheet = "meal_history"
-
-########################### fixed variables ###########################
-
-# get week and year
-week_no = dt.datetime.now().isocalendar()[1]
-year_no = dt.datetime.now().isocalendar()[0]
-
-########################### data retrieval ###########################
-
 # pull recipes
 #xlsx_path = 'C:\Users\Kevin\DS\Dinner Randomizer\meals.xlsx'
 #xlsx_path = 'C:\Users\Kevin\DS\Dinner Randomizer\meals.xlsx'
+xlsx_path = 'meals.xlsx'
+df_meals = pd.read_excel(xlsx_path)
 # df_meals = pd.read_excel("C:/Users/Kevin/DS/Dinner Randomizer/meals.xlsx")
-df_meals = pd.read_excel(xlsx_path, sheet_name=meals_sheet)
-# pull meal history
-df_history = pd.read_excel(xlsx_path, sheet_name=history_sheet)
-
-########################### meal history ###########################
-
-# set week/year of last 2 weeks
-if week_no == 1:
-    week_list = [51, 52]
-    year_list = [year_no - 1]
-elif week_no == 2:
-    week_list = [52, 1]
-    year_list = [year_no - 1, year_no]
-else:
-    week_list = [week_no - 2, week_no - 1]
-    year_list = [year_no]
-
-# only keep history from past 2 weeks
-df_history = df_history[df_history['YearNo'].isin(year_list) & df_history['WeekNo'].isin(week_list)]
-# convert to list
-history_list = df_history['MealID'].tolist()
-
-# remove meals from past 2 weeks from possible recipes
-df_meals = df_meals[~df_meals['MealID'].isin(history_list)]
-
-########################### create meal list based on preferences ###########################
 
 # create empty dataframe for rated recipes
 list_col = df_meals.columns.tolist()
@@ -76,8 +31,6 @@ for index, row in df_meals.iterrows():
             },
             ignore_index=True
         )
-
-########################### loop through options ###########################
 
 # start loop
 while True:
@@ -162,6 +115,5 @@ while True:
 #   1. if moderate/hard receipe rejected, prompt user if prefer an easy one
 #   2. recreate new list (so the rejected carb can be selected again) and select another random recipe
 
-# after recipes accepted, save to history
 # after 3 recipes generated and accepted, print shopping list
 
